@@ -58,8 +58,35 @@ document.querySelectorAll("#trust button").forEach((b) => (b.onclick = () => {
 paintTrust();
 
 // ---------- данные ----------
-const D = await fetch("data/data.json").then((r) => r.json());
-$("#gen").textContent = new Date(D.generated).toLocaleString("ru-RU");
+// Живая лента: data.json обновляется на сервере каждые 5 минут в торговые часы,
+// страница перечитывает его раз в минуту и перерисовывает текущий экран.
+const load = () => fetch(`data/data.json?t=${Date.now()}`, { cache: "no-store" }).then((r) => r.json());
+let D = await load();
+const seen = new Set(D.cards.map((c) => c.id));
+function marketOpen(now = new Date()) {
+  const msk = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Moscow" }));
+  const m = msk.getHours() * 60 + msk.getMinutes(), wd = msk.getDay();
+  return wd >= 1 && wd <= 5 && m >= 10 * 60 + 5 && m <= 18 * 60 + 35;
+}
+function paintLive() {
+  const ago = Math.max(0, Math.round((Date.now() - new Date(D.generated)) / 60000));
+  const agoTxt = ago < 1 ? "только что" : ago < 60 ? `${ago} мин назад` : new Date(D.generated).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  $("#gen").textContent = marketOpen() ? `● в эфире · обновлено ${agoTxt}` : `биржа закрыта · последнее обновление ${agoTxt}`;
+}
+paintLive();
+setInterval(async () => {
+  try {
+    const fresh = await load();
+    if (fresh.generated !== D.generated) {
+      const added = fresh.cards.filter((c) => !seen.has(c.id));
+      added.forEach((c) => seen.add(c.id));
+      D = fresh;
+      if (!/#\/(card|learn)/.test(location.hash)) route();
+      if (added.length) toast(`Новых решений робота: ${added.length}`);
+    }
+  } catch { /* сеть моргнула — попробуем через минуту */ }
+  paintLive();
+}, 60000);
 
 const STATUS = {
   done: ["b-done", "Исполнено"], attention: ["b-attn", "Исполнено с оговорками"], blocked: ["b-block", "Остановлено проверкой"],
