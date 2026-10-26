@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Робот-наставник — демо кабинета</title>
+<meta name="description" content="Торговый робот, который объясняет каждое решение и учит. Демо на paper-счёте.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="viz-root">
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◆</span>
+      <div>
+        <div class="brand-name">Робот-наставник</div>
+        <div class="brand-sub">торгует · объясняет · учит</div>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Разделы">
+      <a href="#/feed" data-tab="feed">Лента</a>
+      <a href="#/safety" data-tab="safety">Страховка</a>
+      <a href="#/learn" data-tab="learn">Учёба</a>
+      <a href="#/results" data-tab="results">Результаты</a>
+    </nav>
+    <div class="top-right">
+      <div class="seg" role="radiogroup" aria-label="Режим доверия" id="trust">
+        <button role="radio" data-mode="observe" title="Робот предлагает, вы подтверждаете">Наблюдение</button>
+        <button role="radio" data-mode="autopilot" title="Робот торгует сам в рамках лимитов">Автопилот</button>
+        <button role="radio" data-mode="paper" title="Учебный счёт без денег">Учебный</button>
+      </div>
+      <button class="icon-btn" id="theme" aria-label="Сменить тему">◐</button>
+    </div>
+  </header>
+
+  <div class="banner" role="note">
+    <strong>Демо.</strong> Данные — paper-счёт робота (без реальных денег) и проверка стратегии на истории.
+    Это не инвестиционная рекомендация, доходность не обещается.
+  </div>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="foot">
+    <span>Данные обновлены: <span id="gen"></span></span>
+    <span>Робот-наставник · MVP</span>
+  </footer>
+</div>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="app.js" type="module"></script>
+</body>
+</html>
