@@ -2,53 +2,100 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Робот-наставник — демо кабинета</title>
-<meta name="description" content="Торговый робот, который объясняет каждое решение и учит. Демо на paper-счёте.">
-<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Робот-наставник — кабинет</title>
+<meta name="description" content="Торговый робот, который объясняет каждое решение и учит. Демо на учебном (paper) счёте.">
+<meta name="theme-color" content="#F5F5F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0C0F" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230071E3'/%3E%3Cpath d='M8 21l5-5 4 3 7-8' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='11' r='2.4' fill='white'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
+<script>
+  // тема до первой отрисовки — без вспышки светлого фона
+  try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
 </head>
 <body>
-<div class="viz-root">
-  <header class="top">
-    <div class="brand">
-      <span class="logo" aria-hidden="true">◆</span>
-      <div>
-        <div class="brand-name">Робот-наставник</div>
-        <div class="brand-sub">торгует · объясняет · учит</div>
-      </div>
-    </div>
-    <nav class="tabs" aria-label="Разделы">
-      <a href="#/feed" data-tab="feed">Лента</a>
-      <a href="#/safety" data-tab="safety">Страховка</a>
-      <a href="#/learn" data-tab="learn">Учёба</a>
-      <a href="#/results" data-tab="results">Результаты</a>
+<a class="skiplink" href="#app">К содержимому</a>
+
+<header class="bar" id="bar">
+  <div class="bar-in">
+    <a class="brand" href="#/feed" aria-label="Робот-наставник — на главную">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <defs><linearGradient id="mk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--mark-a)"/><stop offset="1" stop-color="var(--mark-b)"/></linearGradient></defs>
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#mk)"/>
+        <path d="M8 21l5-5 4 3 7-8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle class="mark-dot" cx="24" cy="11" r="2.3" fill="#fff"/>
+      </svg>
+      <span class="brand-t">Робот&#8209;наставник</span>
+    </a>
+
+    <nav class="nav" aria-label="Разделы">
+      <span class="nav-ind" aria-hidden="true"></span>
+      <a href="#/feed" data-tab="feed"><svg aria-hidden="true"><use href="#i-feed"/></svg><span>Лента</span></a>
+      <a href="#/safety" data-tab="safety"><svg aria-hidden="true"><use href="#i-safety"/></svg><span>Страховка</span></a>
+      <a href="#/learn" data-tab="learn"><svg aria-hidden="true"><use href="#i-learn"/></svg><span>Учёба</span></a>
+      <a href="#/results" data-tab="results"><svg aria-hidden="true"><use href="#i-results"/></svg><span>Результаты</span></a>
     </nav>
-    <div class="top-right">
-      <div class="seg" role="radiogroup" aria-label="Режим доверия" id="trust">
-        <button role="radio" data-mode="observe" title="Робот предлагает, вы подтверждаете">Наблюдение</button>
-        <button role="radio" data-mode="autopilot" title="Робот торгует сам в рамках лимитов">Автопилот</button>
-        <button role="radio" data-mode="paper" title="Учебный счёт без денег">Учебный</button>
-      </div>
-      <button class="icon-btn" id="theme" aria-label="Сменить тему">◐</button>
+
+    <div class="bar-r">
+      <span class="status" id="status" role="status" aria-live="polite"><i class="sdot" aria-hidden="true"></i><span class="status-t">Загрузка…</span></span>
+      <a class="mode-pill" id="modePill" href="#/safety" title="Режим доверия — изменить в «Страховке»"></a>
+      <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему" title="Светлая / тёмная тема">
+        <svg class="sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="moon" aria-hidden="true"><use href="#i-moon"/></svg>
+      </button>
     </div>
-  </header>
-
-  <div class="banner" role="note">
-    <strong>Демо.</strong> Данные — paper-счёт робота (без реальных денег) и проверка стратегии на истории.
-    Это не инвестиционная рекомендация, доходность не обещается.
   </div>
+</header>
 
-  <main id="app" tabindex="-1"></main>
+<main id="app" tabindex="-1" aria-live="off"></main>
 
-  <footer class="foot">
-    <span id="gen"></span>
-    <span>Робот-наставник · MVP</span>
-  </footer>
-</div>
+<footer class="foot">
+  <p><b>Демо.</b> Учебный (paper) счёт робота: сделки по ценам МосБиржи без настоящих денег, и проверка стратегии на истории. Кнопки не отправляют заявок брокеру. Не инвестиционная рекомендация, доходность не обещается.</p>
+  <p class="foot-meta"><span id="gen"></span><span>Робот&#8209;наставник · MVP</span></p>
+</footer>
 
-<div class="tip" id="tip" role="tooltip" hidden></div>
-<div class="toast" id="toast" role="status" hidden></div>
+<nav class="tabbar" aria-label="Разделы (мобильная навигация)">
+  <a href="#/feed" data-tab="feed"><svg aria-hidden="true"><use href="#i-feed"/></svg><span>Лента</span></a>
+  <a href="#/safety" data-tab="safety"><svg aria-hidden="true"><use href="#i-safety"/></svg><span>Страховка</span></a>
+  <a href="#/learn" data-tab="learn"><svg aria-hidden="true"><use href="#i-learn"/></svg><span>Учёба</span></a>
+  <a href="#/results" data-tab="results"><svg aria-hidden="true"><use href="#i-results"/></svg><span>Результаты</span></a>
+</nav>
+
+<div class="pop" id="tip" role="tooltip" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="sheet" id="confirm" aria-labelledby="confirm-t">
+  <form method="dialog">
+    <div class="sheet-ic" aria-hidden="true"><svg><use href="#i-stop"/></svg></div>
+    <h2 id="confirm-t"></h2>
+    <p id="confirm-m"></p>
+    <div class="sheet-act">
+      <button class="btn" value="cancel">Отмена</button>
+      <button class="btn danger" value="ok" id="confirm-ok"></button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Пиктограммы: единая сетка 24, штрих 1.8 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-feed" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="6" r="1.6"/><circle cx="5.5" cy="12" r="1.6"/><circle cx="5.5" cy="18" r="1.6"/><path d="M10 6h9M10 12h9M10 18h6"/></g></symbol>
+  <symbol id="i-safety" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3l7 3v5.5c0 4.3-2.9 7.9-7 9.5-4.1-1.6-7-5.2-7-9.5V6z"/><path d="M8.8 12.2l2.2 2.2 4.4-4.6"/></g></symbol>
+  <symbol id="i-learn" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M2.5 9L12 4.5 21.5 9 12 13.5z"/><path d="M6.5 11v4.8c1.4 1.4 3.3 2.2 5.5 2.2s4.1-.8 5.5-2.2V11"/></g></symbol>
+  <symbol id="i-results" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5h16"/><path d="M4.5 15l4.5-4.5 3.5 3 6.5-7"/><path d="M15 6.5h4v4"/></g></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></g></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.2A8 8 0 019.8 4a8 8 0 1010.2 10.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></g></symbol>
+  <symbol id="i-skip" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/></g></symbol>
+  <symbol id="i-wait" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.5v.1"/></g></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.1"/></g></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10.5l-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></g></symbol>
+</svg>
+
 <script src="app.js" type="module"></script>
 </body>
 </html>
